@@ -1,39 +1,46 @@
-const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
+// src/app.js
+const express = require('express');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db.config');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 
-// ROUTER
-const authRouter = require("./src/routes/authRoutes");
-const userRouter = require("./src/routes/userRoutes");
+// Load environment variables
+dotenv.config();
 
+// Create Express app
 const app = express();
 
-// MIDDLEWARES
-if (process.env.NODE_ENV === "development") {
-    app.use(morgan("dev"));
-}
+// Connect to MongoDB
+connectDB();
 
-const corsOptions = {
-    origin: "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-    optionsSuccessStatus: 204,
-};
-
-app.use(cors(corsOptions));
+// Middleware
 app.use(express.json());
 
-// ROUTES
-app.use("/info", (_, res, next) => {
-    res.status(200).json({
-        data: {
-            fullName: "Nguyen Van A",
-            studentCode: "QNUO1234",
-        },
-    });
-    next();
+// Routes
+app.get('/info', (req, res) => {
+  res.json({
+    data: {
+      fullName: "Nguyen Hai Dang",
+      studentCode: "QE170107"
+    }
+  });
 });
-app.use("/auth", authRouter);
-app.use("/users", userRouter);
 
-module.exports = app;
+app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error'
+  });
+});
+
+// Start server
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
