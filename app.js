@@ -21,8 +21,8 @@ app.use(express.json());
 app.get('/info', (req, res) => {
   res.json({
     data: {
-      fullName: "Nguyen Hai Dang",
-      studentCode: "QE170107"
+      fullName: "Nguyen Tran Huu Phuc",
+      studentCode: "QE170051"
     }
   });
 });
